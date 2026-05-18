@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CarRental.Models;
+using Microsoft.EntityFrameworkCore;
+using Type = CarRental.Models.Type;
 
-namespace CarRental.Models;
+namespace CarRental.Data;
 
 public class RentalDbContext : DbContext
 {

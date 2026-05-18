@@ -1,3 +1,4 @@
+using CarRental.Data;
 using CarRental.Models;
 using Microsoft.EntityFrameworkCore;
 
