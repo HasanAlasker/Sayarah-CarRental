@@ -1,9 +1,9 @@
 ﻿namespace CarRental.Models;
 
-public class Fuel
+public class Role
 {
     public int Id { get; set; }
     public string Name { get; set; }
     
-    public ICollection<Car> Cars { get; set; } = new List<Car>();
+    public ICollection<UserRoles> UserRoles { get; set; } = new List<UserRoles>();
 }
