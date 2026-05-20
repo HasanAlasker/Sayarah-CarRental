@@ -5,6 +5,7 @@ using CarRental.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using CarRental.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,5 +56,11 @@ app.MapControllerRoute(
         name: "default",
         pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<RentalDbContext>();
+    await DataSeeder.SeedAsync(db);
+}
 
 app.Run();

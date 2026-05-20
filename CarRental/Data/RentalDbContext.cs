@@ -1,4 +1,5 @@
-﻿using CarRental.Models;
+﻿using CarRental.Abstraction;
+using CarRental.Models;
 using Microsoft.EntityFrameworkCore;
 using Type = CarRental.Models.Type;
 
@@ -19,7 +20,6 @@ public class RentalDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // ── UserRoles (composite key) ──────────────────────────
         modelBuilder.Entity<UserRoles>()
             .HasKey(ur => new { ur.UserId, ur.RoleId });
 
@@ -33,14 +33,12 @@ public class RentalDbContext : DbContext
             .WithMany(r => r.UserRoles)
             .HasForeignKey(ur => ur.RoleId);
 
-        // ── Car → Owner (User) ─────────────────────────────────
         modelBuilder.Entity<Car>()
             .HasOne(c => c.Owner)
             .WithMany(u => u.Cars)
             .HasForeignKey(c => c.OwnerId)
             .OnDelete(DeleteBehavior.Restrict); // don't delete cars if user deleted
 
-        // ── Car → LOVs ─────────────────────────────────────────
         modelBuilder.Entity<Car>()
             .HasOne(c => c.Fuel)
             .WithMany(f => f.Cars)
@@ -59,26 +57,44 @@ public class RentalDbContext : DbContext
             .HasForeignKey(c => c.TransmissionId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // ── Rental → Renter (User) ─────────────────────────────
         modelBuilder.Entity<Rental>()
             .HasOne(r => r.Renter)
             .WithMany(u => u.Rentals)
             .HasForeignKey(r => r.RenterId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // ── Rental → CarOwner (User) ───────────────────────────
-        // Two FK to same table (User) — must name them explicitly
         modelBuilder.Entity<Rental>()
             .HasOne(r => r.CarOwner)
             .WithMany()
             .HasForeignKey(r => r.OwnerId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // ── Rental → Car ───────────────────────────────────────
         modelBuilder.Entity<Rental>()
             .HasOne(r => r.Car)
             .WithMany(c => c.Rentals)
             .HasForeignKey(r => r.CarId)
             .OnDelete(DeleteBehavior.Restrict);
+    }
+    
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var entries = ChangeTracker.Entries<TimeStamp>();
+
+        foreach (var entry in entries)
+        {
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    entry.Entity.CreatedAt = DateTime.UtcNow;
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                    break;
+
+                case EntityState.Modified:
+                    entry.Entity.UpdatedAt = DateTime.UtcNow; // only update this
+                    break;
+            }
+        }
+
+        return await base.SaveChangesAsync(cancellationToken);
     }
 }
