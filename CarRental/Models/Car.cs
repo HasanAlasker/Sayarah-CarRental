@@ -1,6 +1,8 @@
-﻿namespace CarRental.Models;
+﻿using CarRental.Abstraction;
 
-public class Car
+namespace CarRental.Models;
+
+public class Car : TimeStamp
 {
     public int Id { get; set; }
     public string Name { get; set; }

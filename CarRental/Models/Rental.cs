@@ -1,6 +1,8 @@
-﻿namespace CarRental.Models;
+﻿using CarRental.Abstraction;
 
-public class Rental
+namespace CarRental.Models;
+
+public class Rental : TimeStamp
 {
     public int Id { get; set; }
     public DateTime StartDate { get; set; }

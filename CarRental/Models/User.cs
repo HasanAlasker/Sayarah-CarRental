@@ -1,21 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CarRental.Abstraction;
+using CarRental.enums;
 
 namespace CarRental.Models;
 
-public class User
+public class User : TimeStamp
 {
     public int Id { get; set; }
-    
-    [Required]
-    [MinLength(2)]
     public string Name { get; set; }
-    
-    [Required]
-    [EmailAddress]
     public string Email { get; set; }
-    
-    [Required]
     public string Password { get; set; }
+    public string Phone { get; set; }
+    public DateTime DateOfBirth { get; set; }
+    public Gender Gender { get; set; }
+    public bool AgreedToTermsAndConditions { get; set; }
     
     public ICollection<UserRoles> UserRoles { get; set; } = new List<UserRoles>();
     public ICollection<Car> Cars { get; set; } = new List<Car>(); 
