@@ -76,8 +76,20 @@ public class RentalDbContext : DbContext
             .OnDelete(DeleteBehavior.Restrict);
     }
     
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    // Add IHttpContextAccessor to constructor
+    public RentalDbContext(DbContextOptions<RentalDbContext> options, IHttpContextAccessor httpContextAccessor) 
+        : base(options)
+    {
+        _httpContextAccessor = httpContextAccessor;
+    }
+
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        // Get the logged in userId from session — null if not logged in (e.g. seeder)
+        var userId = _httpContextAccessor.HttpContext?.Items["UserId"] as int?;
+
         var entries = ChangeTracker.Entries<TimeStamp>();
 
         foreach (var entry in entries)
@@ -87,10 +99,13 @@ public class RentalDbContext : DbContext
                 case EntityState.Added:
                     entry.Entity.CreatedAt = DateTime.UtcNow;
                     entry.Entity.UpdatedAt = DateTime.UtcNow;
+                    entry.Entity.CreatedBy = userId;
+                    entry.Entity.UpdatedBy = userId;
                     break;
 
                 case EntityState.Modified:
-                    entry.Entity.UpdatedAt = DateTime.UtcNow; // only update this
+                    entry.Entity.UpdatedAt = DateTime.UtcNow;
+                    entry.Entity.UpdatedBy = userId;
                     break;
             }
         }
