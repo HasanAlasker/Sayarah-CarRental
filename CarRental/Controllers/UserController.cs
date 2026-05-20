@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using CarRental.Data;
+using CarRental.Filters;
 using CarRental.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -13,29 +14,24 @@ namespace CarRental.Controllers;
 
 public class UserController : Controller
 {
-    private readonly ILogger<UserController> _logger;
     private readonly RentalDbContext _db;
     private readonly IConfiguration _config;
 
-    public UserController(ILogger<UserController> logger, RentalDbContext db, IConfiguration config)
+    public UserController(RentalDbContext db, IConfiguration config)
     {
-        _logger = logger;
         _db = db;
         _config = config;
     }
 
-    // GET /User/Index — only logged in users
-    [Authorize]
+    [Authenticated]
     public async Task<IActionResult> Index()
     {
         var users = await _db.Users.ToListAsync();
         return View(users);
     }
 
-    // GET /User/Register
     public IActionResult Register() => View();
 
-    // POST /User/Register
     [HttpPost]
     public async Task<IActionResult> Register(User user)
     {
@@ -58,15 +54,12 @@ public class UserController : Controller
 
         return RedirectToAction(nameof(Login));
     }
-
-    // GET /User/Login
+    
     public IActionResult Login() => View();
-
-    // POST /User/Login — returns JWT token + roles
+    
     [HttpPost]
     public async Task<IActionResult> Login(User user)
     {
-        // Step 1: Find by email only
         var match = await _db.Users
             .FirstOrDefaultAsync(u => u.Email == user.Email);
 
@@ -76,7 +69,6 @@ public class UserController : Controller
             return View(user);
         }
 
-        // Step 2: Verify hashed password
         var hasher = new PasswordHasher<User>();
         var result = hasher.VerifyHashedPassword(match, match.Password, user.Password);
 
@@ -86,27 +78,18 @@ public class UserController : Controller
             return View(user);
         }
 
-        // Step 3: Fetch this user's roles
         var roles = await _db.UserRoles
             .Where(ur => ur.UserId == match.Id)
             .Include(ur => ur.Role)
             .Select(ur => ur.Role.Name)
             .ToListAsync();
 
-        // Step 4: Build JWT
         var token = GenerateJwtToken(match, roles);
 
-        // Step 5: Store userId in session (optional, for MVC views)
         HttpContext.Session.SetInt32("UserId", match.Id);
         HttpContext.Session.SetString("Token", token);
 
-        // Return token — use Ok() if this is an API, or store and redirect for MVC
-        return Ok(new
-        {
-            token,
-            email = match.Email,
-            roles
-        });
+        return View();
     }
     
     [Authorize]
@@ -115,10 +98,7 @@ public class UserController : Controller
         HttpContext.Session.Clear();
         return RedirectToAction(nameof(Login));
     }
-
-    // -------------------------------------------------------
-    // Private helper — builds the JWT token
-    // -------------------------------------------------------
+    
     private string GenerateJwtToken(User user, List<string> roles)
     {
         var claims = new List<Claim>
@@ -126,8 +106,7 @@ public class UserController : Controller
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
         };
-
-        // One claim per role
+        
         foreach (var role in roles)
             claims.Add(new Claim(ClaimTypes.Role, role));
 
