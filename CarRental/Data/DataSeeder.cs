@@ -1,4 +1,5 @@
-﻿using CarRental.Models;
+﻿using CarRental.enums;
+using CarRental.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -73,9 +74,38 @@ public static class DataSeeder
 
         var hasher = new PasswordHasher<User>();
 
-        var admin = new User { Name = "Admin", Email = "admin@carrental.com", Password = "" };
-        var alice = new User { Name = "Alice Smith", Email = "alice@example.com", Password = "" };
-        var bob   = new User { Name = "Bob Jones",  Email = "bob@example.com",   Password = "" };
+        var admin = new User
+        {
+            Name = "Admin",
+            Email = "admin@carrental.com",
+            Password = "",
+            Phone = "0000000000",
+            Gender = Gender.Male,
+            DateOfBirth = DateTime.SpecifyKind(new DateTime(1990, 1, 1), DateTimeKind.Utc),
+            AgreedToTermsAndConditions = true
+        };
+
+        var alice = new User
+        {
+            Name = "Alice Smith",
+            Email = "alice@example.com",
+            Password = "",
+            Phone = "0599000001",
+            Gender = Gender.Female,
+            DateOfBirth = DateTime.SpecifyKind(new DateTime(1990, 1, 1), DateTimeKind.Utc),
+            AgreedToTermsAndConditions = true
+        };
+
+        var bob = new User
+        {
+            Name = "Bob Jones",
+            Email = "bob@example.com",
+            Password = "",
+            Phone = "0599000002",
+            Gender = Gender.Male,
+            DateOfBirth =DateTime.SpecifyKind(new DateTime(1990, 1, 1), DateTimeKind.Utc),
+            AgreedToTermsAndConditions = true
+        };
 
         admin.Password = hasher.HashPassword(admin, "Admin@123");
         alice.Password = hasher.HashPassword(alice, "Alice@123");
@@ -84,7 +114,6 @@ public static class DataSeeder
         db.Users.AddRange(admin, alice, bob);
         await db.SaveChangesAsync();
 
-        // Assign roles
         var adminRole = await db.Roles.FirstAsync(r => r.Name == "Admin");
         var userRole  = await db.Roles.FirstAsync(r => r.Name == "User");
 
