@@ -78,7 +78,7 @@ public static class DataSeeder
         {
             Name = "Admin",
             Email = "admin@carrental.com",
-            Password = "",
+            Password = "123",
             Phone = "0000000000",
             Gender = Gender.Male,
             DateOfBirth = DateTime.SpecifyKind(new DateTime(1990, 1, 1), DateTimeKind.Utc),
@@ -89,7 +89,7 @@ public static class DataSeeder
         {
             Name = "Alice Smith",
             Email = "alice@example.com",
-            Password = "",
+            Password = "123",
             Phone = "0599000001",
             Gender = Gender.Female,
             DateOfBirth = DateTime.SpecifyKind(new DateTime(1990, 1, 1), DateTimeKind.Utc),
@@ -100,7 +100,7 @@ public static class DataSeeder
         {
             Name = "Bob Jones",
             Email = "bob@example.com",
-            Password = "",
+            Password = "123",
             Phone = "0599000002",
             Gender = Gender.Male,
             DateOfBirth =DateTime.SpecifyKind(new DateTime(1990, 1, 1), DateTimeKind.Utc),

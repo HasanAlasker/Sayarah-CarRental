@@ -13,7 +13,7 @@ public class Rental : TimeStamp
     public int OwnerId { get; set; }
     public int RenterId { get; set; }
     
-    public User Renter { get; set; }
-    public Car Car { get; set; }
-    public User CarOwner { get; set; }
+    public User? Renter { get; set; }
+    public Car? Car { get; set; }
+    public User? CarOwner { get; set; }
 }

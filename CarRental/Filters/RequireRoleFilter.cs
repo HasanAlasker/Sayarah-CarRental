@@ -15,8 +15,14 @@ public class RequireRoleFilter : IActionFilter
     public void OnActionExecuting(ActionExecutingContext context)
     {
         var roles = context.HttpContext.Items["Roles"] as List<string>;
+        
+        if (roles == null)
+        {
+            var sessionRoles = context.HttpContext.Session.GetString("Roles");
+            roles = sessionRoles?.Split(',').ToList() ?? new List<string>();
+        }
 
-        if (roles is null || !roles.Contains(_role))
+        if (!roles.Contains(_role))
         {
             if (context.HttpContext.Request.Path.StartsWithSegments("/api"))
                 context.Result = new ObjectResult("Forbidden") { StatusCode = 403 };

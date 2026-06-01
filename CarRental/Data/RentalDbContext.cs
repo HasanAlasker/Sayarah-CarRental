@@ -16,7 +16,13 @@ public class RentalDbContext : DbContext
     public DbSet<Role> Roles { get; set; }
     public DbSet<UserRoles> UserRoles { get; set; }
 
-    public RentalDbContext(DbContextOptions<RentalDbContext> options) : base(options) { }
+    private readonly IHttpContextAccessor? _httpContextAccessor;
+
+    public RentalDbContext(DbContextOptions<RentalDbContext> options, IHttpContextAccessor? httpContextAccessor = null) 
+        : base(options)
+    {
+        _httpContextAccessor = httpContextAccessor;
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -75,20 +81,11 @@ public class RentalDbContext : DbContext
             .HasForeignKey(r => r.CarId)
             .OnDelete(DeleteBehavior.Restrict);
     }
-    
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    // Add IHttpContextAccessor to constructor
-    public RentalDbContext(DbContextOptions<RentalDbContext> options, IHttpContextAccessor httpContextAccessor) 
-        : base(options)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         // Get the logged in userId from session — null if not logged in (e.g. seeder)
-        var userId = _httpContextAccessor.HttpContext?.Items["UserId"] as int?;
+        var userId = _httpContextAccessor?.HttpContext?.Items["UserId"] as int?;
 
         var entries = ChangeTracker.Entries<TimeStamp>();
 

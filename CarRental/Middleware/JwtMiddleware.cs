@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
@@ -22,7 +23,19 @@ public class JwtMiddleware
                     ?? context.Session.GetString("Token");
 
         if (token != null)
+        {
             AttachUserToContext(context, token);
+        }
+        else
+        {
+            // Fallback: If no token but session has UserId, populate Items for compatibility
+            var userId = context.Session.GetInt32("UserId");
+            if (userId != null)
+            {
+                context.Items["UserId"] = userId;
+                context.Items["Roles"] = context.Session.GetString("Roles")?.Split(',').ToList() ?? new List<string>();
+            }
+        }
 
         await _next(context);
     }
@@ -44,23 +57,27 @@ public class JwtMiddleware
                 ValidateAudience = true,
                 ValidAudience = _config["Jwt:Audience"],
                 ValidateLifetime = true,
-                ClockSkew = TimeSpan.Zero // token expires exactly on time
+                ClockSkew = TimeSpan.Zero
             }, out var validatedToken);
 
             var jwt = (JwtSecurityToken)validatedToken;
 
-            // Attach claims to HttpContext.Items for use in filters/controllers
-            context.Items["UserId"] = int.Parse(
-                jwt.Claims.First(c => c.Type == "nameid").Value);
+            // Use the standard ClaimTypes or the specific strings used in GenerateJwtToken
+            var userIdClaim = jwt.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier || c.Type == "nameid");
+            if (userIdClaim != null)
+            {
+                context.Items["UserId"] = int.Parse(userIdClaim.Value);
+            }
 
             context.Items["Roles"] = jwt.Claims
-                .Where(c => c.Type == "role")
+                .Where(c => c.Type == ClaimTypes.Role || c.Type == "role")
                 .Select(c => c.Value)
                 .ToList();
         }
         catch
         {
-            // invalid
+            // If token validation fails, we still have the session fallback in Invoke if needed,
+            // or we let the filters handle the missing Items.
         }
     }
 }

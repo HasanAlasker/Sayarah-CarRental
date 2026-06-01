@@ -7,7 +7,7 @@ public class AuthenticatedFilter : IActionFilter
 {
     public void OnActionExecuting(ActionExecutingContext context)
     {
-        var userId = context.HttpContext.Items["UserId"];
+        var userId = context.HttpContext.Items["UserId"] ?? context.HttpContext.Session.GetInt32("UserId");
 
         if (userId is null)
         {

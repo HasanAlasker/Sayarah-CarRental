@@ -7,10 +7,10 @@ namespace CarRental.Models;
 public class User : TimeStamp
 {
     public int Id { get; set; }
-    public string Name { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public string Phone { get; set; }
+    public required string Name { get; set; }
+    public required string Email { get; set; }
+    public required string Password { get; set; }
+    public required string Phone { get; set; }
     public DateTime DateOfBirth { get; set; }
     public Gender Gender { get; set; }
     public bool AgreedToTermsAndConditions { get; set; }

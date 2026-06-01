@@ -4,6 +4,7 @@ using System.Text;
 using CarRental.Data;
 using CarRental.Filters;
 using CarRental.Models;
+using CarRental.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -33,24 +34,41 @@ public class UserController : Controller
     public IActionResult Register() => View();
 
     [HttpPost]
-    public async Task<IActionResult> Register(User user)
+    public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        if (!ModelState.IsValid) return View(user);
+        if (!ModelState.IsValid) return View(model);
 
-        // Check if email already exists
-        var exists = await _db.Users.AnyAsync(u => u.Email == user.Email);
+        var exists = await _db.Users.AnyAsync(u => u.Email == model.Email);
         if (exists)
         {
             ModelState.AddModelError("Email", "Email is already registered.");
-            return View(user);
+            return View(model);
         }
 
-        // Hash password before saving
+        var user = new User
+        {
+            Name = model.Name,
+            Email = model.Email,
+            Password = "",
+            Phone = model.Phone,
+            DateOfBirth = DateTime.SpecifyKind(model.DateOfBirth, DateTimeKind.Utc),
+            Gender = model.Gender,
+            AgreedToTermsAndConditions = model.AgreedToTermsAndConditions
+        };
+
         var hasher = new PasswordHasher<User>();
-        user.Password = hasher.HashPassword(user, user.Password);
+        user.Password = hasher.HashPassword(user, model.Password);
 
         _db.Users.Add(user);
         await _db.SaveChangesAsync();
+
+        // Assign default "User" role
+        var userRole = await _db.Roles.FirstOrDefaultAsync(r => r.Name == "User");
+        if (userRole != null)
+        {
+            _db.UserRoles.Add(new UserRoles { UserId = user.Id, RoleId = userRole.Id });
+            await _db.SaveChangesAsync();
+        }
 
         return RedirectToAction(nameof(Login));
     }
@@ -58,24 +76,26 @@ public class UserController : Controller
     public IActionResult Login() => View();
     
     [HttpPost]
-    public async Task<IActionResult> Login(User user)
+    public async Task<IActionResult> Login(LoginViewModel model)
     {
+        if (!ModelState.IsValid) return View(model);
+
         var match = await _db.Users
-            .FirstOrDefaultAsync(u => u.Email == user.Email);
+            .FirstOrDefaultAsync(u => u.Email == model.Email);
 
         if (match is null)
         {
             ModelState.AddModelError("", "Invalid email or password.");
-            return View(user);
+            return View(model);
         }
 
         var hasher = new PasswordHasher<User>();
-        var result = hasher.VerifyHashedPassword(match, match.Password, user.Password);
+        var result = hasher.VerifyHashedPassword(match, match.Password, model.Password);
 
         if (result == PasswordVerificationResult.Failed)
         {
             ModelState.AddModelError("", "Invalid email or password.");
-            return View(user);
+            return View(model);
         }
 
         var roles = await _db.UserRoles
@@ -88,11 +108,12 @@ public class UserController : Controller
 
         HttpContext.Session.SetInt32("UserId", match.Id);
         HttpContext.Session.SetString("Token", token);
+        HttpContext.Session.SetString("UserName", match.Name);
+        HttpContext.Session.SetString("Roles", string.Join(",", roles));
 
-        return View();
+        return RedirectToAction("Index", "Home");
     }
     
-    [Authorize]
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();
