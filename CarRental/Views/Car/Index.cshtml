@@ -1,0 +1,92 @@
+@model IEnumerable<CarRental.Models.Car>
+@{
+    ViewData["Title"] = "Browse Cars";
+}
+
+<div class="row mb-4 align-items-center">
+    <div class="col">
+        <h1 class="display-6 fw-bold">Find Your Perfect Ride</h1>
+        <p class="text-secondary">Discover our wide range of premium vehicles.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="filter-section">
+            <h5 class="fw-bold mb-3">Filters</h5>
+            <form method="get" asp-action="Index">
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-bold">SEARCH</label>
+                    <input type="text" name="search" class="form-control" placeholder="Model or Make..." value="@Context.Request.Query["search"]">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-bold">FUEL TYPE</label>
+                    <select name="fuelId" class="form-select">
+                        <option value="">All Fuels</option>
+                        @foreach (var f in ViewBag.Fuels)
+                        {
+                            <option value="@f.Id" selected="@(Context.Request.Query["fuelId"] == f.Id.ToString())">@f.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-bold">CAR TYPE</label>
+                    <select name="typeId" class="form-select">
+                        <option value="">All Types</option>
+                        @foreach (var t in ViewBag.Types)
+                        {
+                            <option value="@t.Id" selected="@(Context.Request.Query["typeId"] == t.Id.ToString())">@t.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-secondary small fw-bold">TRANSMISSION</label>
+                    <select name="transmissionId" class="form-select">
+                        <option value="">All</option>
+                        @foreach (var t in ViewBag.Transmissions)
+                        {
+                            <option value="@t.Id" selected="@(Context.Request.Query["transmissionId"] == t.Id.ToString())">@t.Name</option>
+                        }
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 mt-2">Apply Filters</button>
+                <a asp-action="Index" class="btn btn-link w-100 mt-1 text-decoration-none small">Clear All</a>
+            </form>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var car in Model)
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge bg-light text-primary border">@car.Year</span>
+                                <span class="fw-bold text-success">$@car.CostPerDay<small class="text-secondary fw-normal">/day</small></span>
+                            </div>
+                            <h5 class="card-title mb-1">@car.Make @car.Name</h5>
+                            <p class="text-secondary small mb-3">
+                                @(car.Type?.Name ?? "Type") &bull; 
+                                @(car.Fuel?.Name ?? "Fuel") &bull; 
+                                @(car.Transmission?.Name ?? "Trans")
+                            </p>
+                            
+                            <div class="d-flex gap-3 mb-4 small text-secondary">
+                                <span><i class="bi bi-people"></i> @car.Seats Seats</span>
+                            </div>
+                            
+                            <a asp-action="Details" asp-route-id="@car.Id" class="btn btn-outline-primary w-100">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (!Model.Any())
+            {
+                <div class="col-12 text-center py-5">
+                    <h3 class="text-secondary">No cars found matching your criteria.</h3>
+                </div>
+            }
+        </div>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+@model IEnumerable<CarRental.Models.Rental>
+@{
+    ViewData["Title"] = "All Rentals";
+}
+
+<div class="mb-4">
+    <h1 class="display-6 fw-bold">All Rentals</h1>
+    <p class="text-secondary">Comprehensive view of all bookings in the system.</p>
+</div>
+
+<div class="card p-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th>Car</th>
+                    <th>Renter</th>
+                    <th>Dates</th>
+                    <th>Total Price</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var rental in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="fw-bold">@rental.Car.Make @rental.Car.Name</div>
+                            <div class="small text-secondary">Owner: @rental.CarOwner.Name</div>
+                        </td>
+                        <td>
+                            <div class="fw-bold">@rental.Renter.Name</div>
+                            <div class="small text-secondary">@rental.Renter.Email</div>
+                        </td>
+                        <td>
+                            <div class="small">@rental.StartDate.ToShortDateString() - @rental.EndDate.ToShortDateString()</div>
+                            <div class="text-secondary smaller">@((rental.EndDate - rental.StartDate).Days) days</div>
+                        </td>
+                        <td><span class="fw-bold text-success">$@rental.TotalPrice</span></td>
+                        <td>
+                            @if (rental.EndDate < DateTime.UtcNow)
+                            {
+                                <span class="badge bg-secondary">Completed</span>
+                            }
+                            else if (rental.StartDate > DateTime.UtcNow)
+                            {
+                                <span class="badge bg-info text-white">Upcoming</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

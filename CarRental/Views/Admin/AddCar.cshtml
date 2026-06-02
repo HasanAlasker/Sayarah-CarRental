@@ -1,0 +1,87 @@
+@model CarRental.ViewModels.CarViewModel
+@{
+    ViewData["Title"] = "Add New Car";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h2 class="fw-bold mb-4">Add New Car</h2>
+            
+            <form asp-action="AddCar" method="post">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Make" class="form-label small fw-bold">MAKE</label>
+                        <input asp-for="Make" class="form-control" placeholder="e.g. Toyota">
+                        <span asp-validation-for="Make" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Name" class="form-label small fw-bold">MODEL</label>
+                        <input asp-for="Name" class="form-control" placeholder="e.g. Camry">
+                        <span asp-validation-for="Name" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Year" class="form-label small fw-bold">YEAR</label>
+                        <input asp-for="Year" class="form-control" type="number" value="2024">
+                        <span asp-validation-for="Year" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Seats" class="form-label small fw-bold">SEATS</label>
+                        <input asp-for="Seats" class="form-control" type="number" value="5">
+                        <span asp-validation-for="Seats" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CostPerDay" class="form-label small fw-bold">COST PER DAY ($)</label>
+                    <input asp-for="CostPerDay" class="form-control" type="number" step="0.01">
+                    <span asp-validation-for="CostPerDay" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="FuelId" class="form-label small fw-bold">FUEL TYPE</label>
+                    <select asp-for="FuelId" class="form-select">
+                        <option value="">Select Fuel</option>
+                        @foreach (var f in ViewBag.Fuels)
+                        {
+                            <option value="@f.Id">@f.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="FuelId" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="TypeId" class="form-label small fw-bold">CAR TYPE</label>
+                    <select asp-for="TypeId" class="form-select">
+                        <option value="">Select Type</option>
+                        @foreach (var t in ViewBag.Types)
+                        {
+                            <option value="@t.Id">@t.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="TypeId" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="TransmissionId" class="form-label small fw-bold">TRANSMISSION</label>
+                    <select asp-for="TransmissionId" class="form-select">
+                        <option value="">Select Transmission</option>
+                        @foreach (var t in ViewBag.Transmissions)
+                        {
+                            <option value="@t.Id">@t.Name</option>
+                        }
+                    </select>
+                    <span asp-validation-for="TransmissionId" class="text-danger small"></span>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary py-3 fw-bold">Create Car Listing</button>
+                    <a asp-action="Cars" class="btn btn-link text-decoration-none text-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

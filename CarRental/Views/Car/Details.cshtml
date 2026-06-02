@@ -1,0 +1,82 @@
+@model CarRental.Models.Car
+@{
+    ViewData["Title"] = Model.Make + " " + Model.Name;
+}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="fw-bold mb-0">@Model.Make @Model.Name</h1>
+                    <p class="text-secondary fs-5">@Model.Year &bull; @Model.Type.Name</p>
+                </div>
+                <div class="text-end">
+                    <span class="display-6 fw-bold text-success">$@Model.CostPerDay</span>
+                    <p class="text-secondary mb-0">per day</p>
+                </div>
+            </div>
+
+            <hr>
+
+            <h5 class="fw-bold mb-3">Specifications</h5>
+            <div class="row g-4 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="bg-light p-3 rounded text-center">
+                        <small class="text-secondary d-block">Fuel</small>
+                        <span class="fw-bold">@Model.Fuel.Name</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="bg-light p-3 rounded text-center">
+                        <small class="text-secondary d-block">Transmission</small>
+                        <span class="fw-bold">@Model.Transmission.Name</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="bg-light p-3 rounded text-center">
+                        <small class="text-secondary d-block">Seats</small>
+                        <span class="fw-bold">@Model.Seats</span>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="bg-light p-3 rounded text-center">
+                        <small class="text-secondary d-block">Year</small>
+                        <span class="fw-bold">@Model.Year</span>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="fw-bold mb-3">About this car</h5>
+            <p class="text-secondary">
+                This @Model.Year @Model.Make @Model.Name is a perfect choice for your next trip. 
+                Maintained in excellent condition by owner @Model.Owner.Name, it offers a smooth 
+                driving experience with its @Model.Transmission.Name transmission and @Model.Fuel.Name engine.
+            </p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card p-4 sticky-top" style="top: 2rem;">
+            <h4 class="fw-bold mb-4">Book this car</h4>
+            
+            <form asp-controller="Rental" asp-action="Book" method="post">
+                <input type="hidden" name="CarId" value="@Model.Id">
+                
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">START DATE</label>
+                    <input type="date" name="StartDate" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label fw-bold small">END DATE</label>
+                    <input type="date" name="EndDate" class="form-control" required min="@DateTime.Now.ToString("yyyy-MM-dd")">
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-3 fw-bold">Rent Now</button>
+            </form>
+            
+            <p class="text-center text-secondary small mt-3 mb-0">You won't be charged yet.</p>
+        </div>
+    </div>
+</div>

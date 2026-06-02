@@ -1,0 +1,82 @@
+@model IEnumerable<CarRental.Models.Rental>
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="display-6 fw-bold">Admin Dashboard</h1>
+        <p class="text-secondary">Overview of system performance and activity.</p>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-3">
+        <div class="card stats-card h-100">
+            <div class="value">@ViewBag.TotalCars</div>
+            <div class="label">Total Cars</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card h-100">
+            <div class="value">@ViewBag.TotalRentals</div>
+            <div class="label">Total Rentals</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card h-100">
+            <div class="value text-success">@ViewBag.ActiveRentals</div>
+            <div class="label">Active Rentals</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stats-card h-100">
+            <div class="value text-warning">@ViewBag.TotalUsers</div>
+            <div class="label">Total Users</div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold mb-0">Recent Rentals</h5>
+                <a asp-action="Rentals" class="btn btn-link small text-decoration-none">View All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-borderless small mb-0">
+                    <thead>
+                        <tr>
+                            <th>Car</th>
+                            <th>Renter</th>
+                            <th>Dates</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rental in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold">@rental.Car.Make @rental.Car.Name</td>
+                                <td>@rental.Renter.Name</td>
+                                <td>@rental.StartDate.ToShortDateString()</td>
+                                <td class="text-success fw-bold">$@rental.TotalPrice</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-4 h-100">
+            <h5 class="fw-bold mb-4">Quick Actions</h5>
+            <div class="d-grid gap-3">
+                <a asp-action="AddCar" class="btn btn-primary py-3">Add New Car</a>
+                <a asp-action="Cars" class="btn btn-outline-secondary py-3">Manage Cars</a>
+                <a asp-action="Rentals" class="btn btn-outline-secondary py-3">All Rentals</a>
+            </div>
+        </div>
+    </div>
+</div>

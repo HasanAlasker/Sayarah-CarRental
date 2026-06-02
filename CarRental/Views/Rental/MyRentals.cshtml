@@ -1,0 +1,62 @@
+@model IEnumerable<CarRental.Models.Rental>
+@{
+    ViewData["Title"] = "My Rentals";
+}
+
+<div class="mb-4">
+    <h1 class="display-6 fw-bold">My Rentals</h1>
+    <p class="text-secondary">Track and manage your upcoming and past bookings.</p>
+</div>
+
+<div class="table-responsive">
+    <table class="table align-middle">
+        <thead>
+            <tr>
+                <th>Car</th>
+                <th>Owner</th>
+                <th>Dates</th>
+                <th>Total Price</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var rental in Model)
+            {
+                <tr>
+                    <td>
+                        <div class="fw-bold">@rental.Car.Make @rental.Car.Name</div>
+                    </td>
+                    <td>@rental.CarOwner.Name</td>
+                    <td>
+                        <div class="small">@rental.StartDate.ToShortDateString() - @rental.EndDate.ToShortDateString()</div>
+                        <div class="text-secondary smaller">@((rental.EndDate - rental.StartDate).Days) days</div>
+                    </td>
+                    <td><span class="fw-bold text-success">$@rental.TotalPrice</span></td>
+                    <td>
+                        @if (rental.EndDate < DateTime.UtcNow)
+                        {
+                            <span class="badge bg-secondary">Completed</span>
+                        }
+                        else if (rental.StartDate > DateTime.UtcNow)
+                        {
+                            <span class="badge bg-info text-white">Upcoming</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Active</span>
+                        }
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="5" class="text-center py-5">
+                        <p class="text-secondary mb-3">You haven't rented any cars yet.</p>
+                        <a asp-controller="Car" asp-action="Index" class="btn btn-primary">Browse Cars</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

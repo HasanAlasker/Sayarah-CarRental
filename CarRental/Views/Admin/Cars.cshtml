@@ -1,0 +1,47 @@
+@model IEnumerable<CarRental.Models.Car>
+@{
+    ViewData["Title"] = "Manage Cars";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="display-6 fw-bold">Manage Cars</h1>
+        <p class="text-secondary">View and manage all vehicles in the system.</p>
+    </div>
+    <a asp-action="AddCar" class="btn btn-primary">Add New Car</a>
+</div>
+
+<div class="card p-0">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="bg-light">
+                <tr>
+                    <th>Car</th>
+                    <th>Type</th>
+                    <th>Year</th>
+                    <th>Cost/Day</th>
+                    <th>Owner</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var car in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="fw-bold">@car.Make @car.Name</div>
+                            <div class="small text-secondary">@car.Fuel.Name &bull; @car.Transmission.Name</div>
+                        </td>
+                        <td>@car.Type.Name</td>
+                        <td>@car.Year</td>
+                        <td class="fw-bold text-success">$@car.CostPerDay</td>
+                        <td>@car.Owner.Name</td>
+                        <td>
+                            <a asp-controller="Car" asp-action="Details" asp-route-id="@car.Id" class="btn btn-sm btn-outline-primary">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

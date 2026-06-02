@@ -1,0 +1,80 @@
+@model CarRental.ViewModels.RegisterViewModel
+@using CarRental.enums
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="row justify-content-center py-5">
+    <div class="col-md-6">
+        <div class="card p-4 shadow-lg border-0">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold">Create Account</h2>
+                <p class="text-secondary">Join us to start your journey.</p>
+            </div>
+
+            <form asp-action="Register" method="post">
+                <div class="mb-3">
+                    <label asp-for="Name" class="form-label small fw-bold">FULL NAME</label>
+                    <input asp-for="Name" class="form-control" placeholder="John Doe">
+                    <span asp-validation-for="Name" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label small fw-bold">EMAIL ADDRESS</label>
+                    <input asp-for="Email" class="form-control" placeholder="john@example.com">
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Password" class="form-label small fw-bold">PASSWORD</label>
+                        <input asp-for="Password" type="password" class="form-control" placeholder="••••••••">
+                        <span asp-validation-for="Password" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="ConfirmPassword" class="form-label small fw-bold">CONFIRM PASSWORD</label>
+                        <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="••••••••">
+                        <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="Phone" class="form-label small fw-bold">PHONE NUMBER</label>
+                        <input asp-for="Phone" class="form-control" placeholder="05XXXXXXXX">
+                        <span asp-validation-for="Phone" class="text-danger small"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="DateOfBirth" class="form-label small fw-bold">DATE OF BIRTH</label>
+                        <input asp-for="DateOfBirth" type="date" class="form-control">
+                        <span asp-validation-for="DateOfBirth" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Gender" class="form-label small fw-bold">GENDER</label>
+                    <select asp-for="Gender" class="form-select" asp-items="Html.GetEnumSelectList<Gender>()"></select>
+                    <span asp-validation-for="Gender" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <div class="form-check">
+                        <input asp-for="AgreedToTermsAndConditions" class="form-check-input" type="checkbox">
+                        <label asp-for="AgreedToTermsAndConditions" class="form-check-label small text-secondary">
+                            I agree to the <a href="#" class="text-primary text-decoration-none fw-bold">Terms and Conditions</a>
+                        </label>
+                    </div>
+                    <span asp-validation-for="AgreedToTermsAndConditions" class="text-danger small"></span>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg py-3 fw-bold">Create Account</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-4">
+                <p class="text-secondary mb-0">Already have an account? <a asp-action="Login" class="text-primary fw-bold text-decoration-none">Login</a></p>
+            </div>
+        </div>
+    </div>
+</div>
